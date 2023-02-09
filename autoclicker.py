@@ -1,27 +1,37 @@
-import time, random
-from pynput.keyboard import Key, Controller, Listener
+import time
+from threading import Thread
 
-keyboard = Controller()
+from pynput.keyboard import Controller as Keyboard
+from pynput.mouse import Controller as Mouse
 
-def prezz(nappain):
-    keyboard.press(nappain)
-    keyboard.release(nappain)
+from pynput.keyboard import Key, Listener
+from pynput.mouse import Button
+
+keyboard = Keyboard()
+mouse = Mouse()
+
+def press(controller, key):
+    controller.press(key)
+    controller.release(key)
+
+def click_combo():
+    running: bool = True
+    while running:
+        s = 1
+        press(mouse, Button.left)
+        
+        time.sleep(s)
 
 def on_press(key):
     if (key == Key.enter):
-        time.sleep(1)
-        while 1:
-            s = 0.1
-            time.sleep(s)
-                        
-            prezz(Key.space)
-            prezz('m')
-            prezz('g')
-            prezz('d')
-            prezz('c')
+        print("enter")
+        clicker = Thread(target=click_combo)
+        clicker.start()
 
-            with keyboard.pressed(Key.shift):
-                prezz('1')
+    
+    if (key == Key.esc):
+        running: bool = False
+        print("esc")
 
 with Listener(on_press=on_press) as listener:
     listener.join()
