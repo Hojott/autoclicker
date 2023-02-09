@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# Autoclicker that can use keyboard and mouse
+
 import time
 from threading import Thread
 
@@ -7,31 +10,46 @@ from pynput.mouse import Controller as Mouse
 from pynput.keyboard import Key, Listener
 from pynput.mouse import Button
 
-keyboard = Keyboard()
-mouse = Mouse()
 
-def press(controller, key):
-    controller.press(key)
-    controller.release(key)
+class Clicker:
+    """ Automatic clicker, starts with Enter and pauses with Esc
+    """
+    def __init__(self):
+        self.running: bool = False
+        self.keyboard = Keyboard()
+        self.mouse = Mouse()
 
-def click_combo():
-    running: bool = True
-    while running:
-        s = 1
-        press(mouse, Button.left)
-        
-        time.sleep(s)
+    def press_key(self, controller, key):
+        """ Takes in the controller (keyboard or mouse) and key to press
+        """
+        controller.press(key)
+        controller.release(key)
 
-def on_press(key):
-    if (key == Key.enter):
-        print("enter")
-        clicker = Thread(target=click_combo)
-        clicker.start()
+    def click_combo(self):
+        """ Edit to change keys to press and sleep time
+        """
+        while self.running:
+            sleep = 1
+
+            self.press_key(self.mouse, Button.left)
+
+            time.sleep(sleep)
+
+    def listen(self, key):
+        """ Listens to keyboard presses
+        """
+        if (key == Key.enter):
+            self.running = True
+            t = Thread(target=self.click_combo, name=clicker)
+            t.start()
+            print("Started")
 
     
-    if (key == Key.esc):
-        running: bool = False
-        print("esc")
+        if (key == Key.esc):
+            self.running = False
+            print("Paused")
 
-with Listener(on_press=on_press) as listener:
-    listener.join()
+if __name__ == '__main__':
+    clicker = Clicker()
+    with Listener(on_press=clicker.listen) as listener:
+        listener.join()
