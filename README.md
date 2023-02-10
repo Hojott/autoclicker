@@ -1,2 +1,2 @@
 # autoclicker
-A simple autoclicker for Antimatter Dimensions
+An autoclicker module, slowly WIP
